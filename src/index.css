@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.btn-remove {
+  margin-left: 10px;
+}
+
+.unordered-list {
+  list-style: none;
+  margin-left: -30px;
+}
