@@ -1,12 +1,31 @@
-import React from 'react'
-// import { useNavigate } from 'react-router-dom'
-import { v4 as uuid } from 'uuid';
-// import * as api from '../api/api'
+import React, { useEffect } from 'react'
+
+import { useState } from 'react'
+import * as api from '../api/api'
+import Table from './Table'
 
 function TodoList() {
-    const [items, setList] = React.useState([]);
-    const [name, setName] = React.useState('');
-    const [removeId, setId] = React.useState([]);
+    const [items, setItems] = useState([])
+    const [name, setName] = useState('')
+    const [removeId, setId] = useState([])
+
+    useEffect(() => {
+        getAllToDoItems()
+    })
+
+    const getAllToDoItems = () => {
+        api.getAllToDoItems().then((res) => {
+            const data = res.data.data
+            setItems(data)
+        }).catch(err => console.log(err))
+    }
+
+    const getItems = () => {
+        let list = []
+        for (const l of items) {
+
+        }
+    }
 
     const handleChange = (e) => {
         setName(e.target.value);
@@ -19,28 +38,24 @@ function TodoList() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const id = uuid();
-        const newList = items.concat({ id, name });
-        setList(newList);
-
-        e.target.value = '';
-        handleChange(e);
-
-        // api.updateTodoList(newList).then(res => {
-
-        // }).catch(err => console.log(err))
+        if (name.length === 0) return
+        api.addToDoItem({ item: name }).then((res) => {
+            const { _id: id } = res.data.data
+            const newList = items.concat({ id, name })
+            setItems(newList)
+            setName('')
+        }
+        ).catch(err => {
+            console.log(err)
+        })
     }
 
     const handleRemove = (e) => {
-        let newList = items;
+        let newList = items
         for (let element of removeId) {
-            newList = newList.filter((item) => item.id !== element.id);
+            newList = newList.filter((item) => item.id !== element.id)
         }
-        setList(newList);
-
-        // api.updateTodoList(newList).then(res => {
-
-        // }).catch(err => console.log(err))
+        setItems(newList)
     }
 
     return (
@@ -67,22 +82,23 @@ function TodoList() {
 
                         <br />
                         <br />
-                        <div className="form-group">
+                        {/* <div className="form-group">
                             <h2 htmlFor="name">List</h2>
                             <ul className="unordered-list">
                                 {
                                     items.map((item) => {
                                         return <li key={item.id}>
-                                            <input type="checkbox" onChange={() => getId(item.id)} />{item.name}
+                                            <input type="checkbox" onChange={() => getId(item.id)} /> {item.item}
                                         </li>;
                                     })
                                 }
                             </ul>
-                        </div>
+                        </div> */}
                     </form>
+                    <Table items={items} setItems={setItems} />
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 
